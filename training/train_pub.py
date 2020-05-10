@@ -18,15 +18,22 @@ from keras.optimizers import Adam
 from mtcnn_model.mtcnn_model import p_net, r_net, o_net
 from config import LABEL_MAP, MODEL_WEIGHT_SAVE_DIR, LOG_DIR
 
-MODES = ['label', 'bbox', 'landmark']
+MODES = ['label', 'bbox', 'landmark']   # not used
 
-NEGATIVE = TK.constant(LABEL_MAP['0'])
+NEGATIVE = TK.constant(LABEL_MAP['0'])  # not used
 POSITIVE = TK.constant(LABEL_MAP['1'])
 PARTIAL = TK.constant(LABEL_MAP['-1'])
 LANDMARK = TK.constant(LABEL_MAP['-2'])
 num_keep_radio = 0.7
 
-def cal_mask(label_true, _type='label'):
+
+def cal_mask(label_true, _type='label'):    # label_true: ground truth labels
+    """
+    Calculate mask as filter to get particular examples with respect to different training target
+    :param label_true: ground truth tensor
+    :param _type: 'label' 'bbox' or 'landmark'('label' by default)
+    :return: mask
+    """
     def true_func():
         return 0
 
@@ -34,11 +41,11 @@ def cal_mask(label_true, _type='label'):
         return 1
 
     label_true_int32 = tf.cast(label_true, dtype=tf.int32)
-    if _type == 'label':
+    if _type == 'label':        # need pos and neg examples when training label
         label_filtered = tf.map_fn(lambda x: tf.cond(tf.equal(x[0], x[1]), true_func, false_func), label_true_int32)
-    elif _type == 'bbox':
+    elif _type == 'bbox':       # need pos and part examples when training label
         label_filtered = tf.map_fn(lambda x: tf.cond(tf.equal(x[0], 1), true_func, false_func), label_true_int32)
-    elif _type == 'landmark':
+    elif _type == 'landmark':   # need landmark examples when training label
         label_filtered = tf.map_fn(lambda x: tf.cond(tf.logical_and(tf.equal(x[0], 1), tf.equal(x[1], 1)),
                                                      false_func, true_func), label_true_int32)
     else:
@@ -63,12 +70,12 @@ def label_ohem(label_true, label_pred):
     loss = -tf.log(label_prob + 1e-10)
 
     valid_inds = cal_mask(label_true, 'label')
-    num_valid = tf.reduce_sum(valid_inds)
+    num_valid = tf.reduce_sum(valid_inds)       # get the num of valid samples
 
     keep_num = tf.cast(tf.cast(num_valid, dtype=tf.float32) * num_keep_radio, dtype=tf.int32)
     # set 0 to invalid sample
     loss = loss * tf.cast(valid_inds, dtype=tf.float32)
-    loss, _ = tf.nn.top_k(loss, k=keep_num)
+    loss, _ = tf.nn.top_k(loss, k=keep_num)     # get top k losses
     return tf.reduce_mean(loss)
 
 
@@ -77,7 +84,7 @@ def bbox_ohem(label_true, bbox_true, bbox_pred):
     num = tf.reduce_sum(mask)
     keep_num = tf.cast(num, dtype=tf.int32)
 
-    bbox_true1 = tf.boolean_mask(bbox_true, mask, axis=0)
+    bbox_true1 = tf.boolean_mask(bbox_true, mask, axis=0)   # get valid b-boxes
     bbox_pred1 = tf.boolean_mask(bbox_pred, mask, axis=0)
 
     square_error = tf.square(bbox_pred1 - bbox_true1)
@@ -106,7 +113,7 @@ def landmark_ohem(label_true, landmark_true, landmark_pred):
     return tf.reduce_mean(square_error)
 
 
-def _loss_func(y_true, y_pred):
+def _loss_func(y_true, y_pred):     # calculate total loss
     labels_true = y_true[:, :2]
     bbox_true = y_true[:, 2:6]
     landmark_true = y_true[:, 6:]
@@ -135,7 +142,7 @@ def _onet_loss_func(y_true, y_pred):
     bbox_loss = bbox_ohem(labels_true, bbox_true, bbox_pred)
     landmark_loss = landmark_ohem(labels_true, landmark_true, landmark_pred)
 
-    return label_loss + bbox_loss * 0.5 + landmark_loss
+    return label_loss + bbox_loss * 0.5 + landmark_loss     # ratio is different
 
 
 
@@ -188,7 +195,7 @@ def train_o_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, 
     return _o_net
 
 
-def create_callbacks_model_file(net_name, epochs):
+def create_callbacks_model_file(net_name, epochs=1):
     filename = datetime.datetime.now().strftime('%Y%m%d_%H%M%S.%f')
     
     log_dir = "{}/{}/{}".format(LOG_DIR, net_name, filename)
@@ -198,6 +205,6 @@ def create_callbacks_model_file(net_name, epochs):
     tensor_board = TensorBoard(log_dir=log_dir)
     model_file_path = '{}/{}.h5'.format(MODEL_WEIGHT_SAVE_DIR, net_name+'_weight')
 
-    checkpoint = ModelCheckpoint(model_file_path, verbose=0, save_weights_only=True)
+    checkpoint = ModelCheckpoint(model_file_path, verbose=0, save_weights_only=True, period=epochs)
     return [checkpoint, tensor_board], model_file_path
 

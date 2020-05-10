@@ -13,7 +13,7 @@ NET_SIZE = {
 
 NET_NAMES = ['p_net', 'r_net', 'o_net']
 
-LABEL_MAP = {'0': [1, 0], '1': [0, 1], '-1': [0, 0], '-2': [1, 1]}
+LABEL_MAP = {'0': [1, 0], '1': [0, 1], '-1': [0, 0], '-2': [1, 1]}      # neg pos part landmark respectively
 
 GAN_DATA_ROOT_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/data_set'
 
@@ -30,7 +30,7 @@ CELEBA_ANNO_BBOX_FILE = CELEBA_ANNO_DIR + 'list_bbox_celeba.txt'
 
 MODEL_WEIGHT_SAVE_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/model_weight'
 LOG_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/log'
-BATCH_SIZE = 64*7
+BATCH_SIZE = 64*5       # 64*7 3+1+1+2
 
 #p_net
 PNET_EPOCHS= 1
@@ -40,7 +40,7 @@ PNET_CELEBA_NUM = 100002
 PNET_WIDEFACE_NUM = 20002
 
 PNET_BACKGRAND_NEG_NUM = 50
-PNET_FACE_NEG_NUM = 5
+PNET_FACE_NEG_NUM = 5       # num for each pic, not for entire dataset
 PNET_POS_PART_NUM = 20
 
 #r_net
@@ -66,7 +66,7 @@ ONET_FACE_NEG_NUM = 5
 ONET_POS_PART_NUM = 20
 
 #gen_middle_wideface_data
-DETECT_WIDEFACE_NUM = 2
+DETECT_WIDEFACE_NUM = 2     # TODO: Changeable param of OHEM(From github comments)
 
 
 #test

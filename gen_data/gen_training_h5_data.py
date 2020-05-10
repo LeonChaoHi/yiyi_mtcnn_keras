@@ -35,38 +35,38 @@ def main(input_net_name):
     create_pos_dataset(net_name, pos, target_size, net_data_dir)
     create_neg_dataset(net_name, neg, target_size, net_data_dir)
     create_part_dataset(net_name, part, target_size, net_data_dir)
-    create_landmark_dataset(net_name, landmark_anno, target_size, net_data_dir)
+    # create_landmark_dataset(net_name, landmark_anno, target_size, net_data_dir)
 
 def create_pos_dataset(net_name, pos, target_size, out_dir):
-    ims = []
+    ims = []            # tensor of images, landmarks(bbox) and labels
     landmarks = []
     labels = []
-    for line in pos:
+    for line in pos:    # list read from annotation text file (one sample per line)
 
-        words = line.strip().split()
+        words = line.strip().split()        # words: name label=0,1,-1 [landmark]
         if '.jpg' in words[0]:
             image_file_name = words[0]
         else:    
-            image_file_name = words[0] + '.jpg'
+            image_file_name = words[0] + '.jpg'     # seems no .jpg here when writing annotations
 
-        im = cv2.imread(image_file_name)
+        im = cv2.imread(image_file_name)    # read img into tensor
         im = resize(im, target_size)
         im = im.astype('uint8')
         ims.append(im)
 
-        labels.append(int(words[1]))
+        labels.append(int(words[1]))        # read label into tensor(string format '1')
 
-        landmark = words[2:6]
+        landmark = words[2:6]               # read landmark into tensor(offsets)
         landmark = list(map(float, landmark))
         landmark = np.array(landmark, dtype='float32')
         landmarks.append(landmark)
         if len(ims)%500 == 0 :
             print('pos data doing, total: {}'.format(len(ims)))
-    landmark_data = list(zip(labels, ims, landmarks))
+    landmark_data = list(zip(labels, ims, landmarks))           # zip to list of tuples with respect to samples
     random.shuffle(landmark_data)
-    labels, ims, landmarks = zip(*landmark_data)
+    labels, ims, landmarks = zip(*landmark_data)               # reverse zip to list of 3 tuples(labels ims & landmarks)
 
-    landmark_data_filename = os.path.join(out_dir, 'pos_shuffle.h5')
+    landmark_data_filename = os.path.join(out_dir, 'pos_shuffle.h5')        # save shuffled data as h5 file
     save_dict_to_hdf5({'labels': labels, 'ims': ims, 'bbox': landmarks}, landmark_data_filename)
 
     print('pos data done, total: {}'.format(len(ims)))    

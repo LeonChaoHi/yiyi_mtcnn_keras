@@ -22,11 +22,11 @@ def p_net(training=False):
     landmark = layers.Conv2D(10, 1, padding='valid', name='p_landmark')(y)
 
     if training:
-        classifier = layers.Reshape((2,), name='p_classifier1')(classifier)
+        classifier = layers.Reshape((2,), name='p_classifier1')(classifier) # reshape (1, 1, c) --> (c,)
         bbox = layers.Reshape((4,), name='p_bbox1')(bbox)
         landmark = layers.Reshape((10,), name='p_landmark1')(landmark)
         outputs = layers.concatenate([classifier, bbox, landmark])
-        model = Model(inputs=[x], outputs=[outputs], name='P_Net')
+        model = Model(inputs=[x], outputs=[outputs], name='P_Net')      # training output shape: ((2+4+10),)
     else:
         model = Model(inputs=[x], outputs=[classifier, bbox, landmark], name='P_Net')
     return model
@@ -46,7 +46,7 @@ def r_net(training=False):
     y = layers.PReLU(name='r_prelu4')(y)
     y = layers.Flatten()(y)
 
-    classifier = layers.Dense(2, activation='softmax', name='r_classifier')(y)
+    classifier = layers.Dense(2, activation='softmax', name='r_classifier')(y)  # training output shape: ((2+4+10),)
     bbox = layers.Dense(4, name='r_bbox')(y)
     landmark = layers.Dense(10, name='r_landmark')(y)
 

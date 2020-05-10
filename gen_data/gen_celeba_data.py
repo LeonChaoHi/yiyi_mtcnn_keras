@@ -7,7 +7,7 @@ Created on Sun Aug 19 12:43:19 2018
 import os
 import random
 import sys
-sys.path.append(".")
+# sys.path.append(".")
 
 import cv2
 import numpy as np

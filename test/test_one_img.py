@@ -41,7 +41,8 @@ def main(image_file):
     cv2.waitKey(0)
     
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
-    else:
-        main(sys.argv[1])
+    # if len(sys.argv) != 2:
+    #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
+    # else:
+    #     main(sys.argv[1]
+    main('test_input_img/00.jpg')

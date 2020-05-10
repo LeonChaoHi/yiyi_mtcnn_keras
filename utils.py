@@ -99,7 +99,7 @@ def recursively_load_dict_contents_from_group(h5file, path):
 
 
 def load_weights(weights_dir):
-    weights_files = glob.glob('{}/*.h5'.format(weights_dir))
+    weights_files = glob.glob('{}/*.h5'.format(weights_dir))    # get .h5 file names(with path) in weights_dir
     p_net_weight = None
     r_net_weight = None
     o_net_weight = None
@@ -116,7 +116,7 @@ def load_weights(weights_dir):
     if p_net_weight is None and r_net_weight is None and o_net_weight is None:
         raise ValueError('No valid weights files !')
 
-    return p_net_weight, r_net_weight, o_net_weight
+    return p_net_weight, r_net_weight, o_net_weight     # return file path or None
 
 
 def process_image(img, scale):
@@ -125,7 +125,7 @@ def process_image(img, scale):
     new_width = int(width * scale)  # resized new width
     new_dim = (new_width, new_height)
     img_resized = cv2.resize(img, new_dim, interpolation=cv2.INTER_LINEAR)  # resized image
-    img_resized = (img_resized - 127.5) / 128
+    img_resized = (img_resized - 127.5) / 128       # assumption: inputted image range from 0 to 255
     return img_resized
 
 
@@ -137,15 +137,16 @@ def batch_gen_bbox(cls_map, reg, scale, threshold, stride=2, cell_size=12):
     return bboxes
 
 
-def generate_bbox(cls_map, reg, scale, threshold, stride=2, cell_size=12):
+def generate_bbox(cls_map, reg, scale, threshold, stride=2, cell_size=12):  # ((h,w), (h,w,4))
 
-    t_index = np.where(cls_map > threshold)
+    t_index = np.where(cls_map > threshold)     # indices of valid confidences(scores) in cls_map (n, 2)
+    # (indicating positions of proposing boxes)
 
-    # find nothing
+    # if no valid b-boxes
     if t_index[0].size == 0:
         return np.array([])
 
-    # offset
+    # get b-boxes with enough confidence(4 vectors of offset x1 y1 x2 y2)
     dx1, dy1, dx2, dy2 = [reg[t_index[0], t_index[1], i] for i in range(4)]
 
     reg = np.array([dx1, dy1, dx2, dy2])
@@ -155,11 +156,19 @@ def generate_bbox(cls_map, reg, scale, threshold, stride=2, cell_size=12):
                       np.round((stride * t_index[1] + cell_size) / scale),
                       np.round((stride * t_index[0] + cell_size) / scale),
                       score,
-                      reg])
+                      reg])     # shape: (9, n): (px1, py1, px2, py2, score, dx1, dy1, dx2, dy2)
 
-    return bbox.T
+    return bbox.T       # transpose to shape: (n, 9)
+
 
 def py_nms(bboxes, thresh, mode="union"):
+    """
+    Non Maximum Suppression processing for boxes
+    :param bboxes: in format of coordinates, not offsets
+    :param thresh: threshold of IoU
+    :param mode:   'union' or 'minimum'
+    :return:       mask for input boxes
+    """
     assert mode in ['union', 'minimum']
 
     x1 = bboxes[:, 0]
@@ -193,8 +202,9 @@ def py_nms(bboxes, thresh, mode="union"):
 
     return keep
 
+
 def iou(box, boxes):
-#    print('iou----------:',boxes.shape)
+    # print('iou----------:',boxes.shape)
     box_area = (box[2] - box[0] + 1) * (box[3] - box[1] + 1)
     area = (boxes[:, 2] - boxes[:, 0] + 1) * (boxes[:, 3] - boxes[:, 1] + 1)
     xx1 = np.maximum(box[0], boxes[:, 0])
