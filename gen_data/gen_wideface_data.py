@@ -81,8 +81,7 @@ def main(input_net_name):
         assert '/' in image_name
         
         n_faces = int(annotations[idx_line + 1])    # get faces num
-        
-        
+
         image_path = os.path.join(images_dir, image_name)
         img = cv2.imread(image_path)    # read whole picture
         
@@ -96,6 +95,10 @@ def main(input_net_name):
         bboxes = np.array(bboxes, dtype=np.float32)
         
         idx_line += 1 + n_faces + 1
+        if n_faces == 0:
+            idx_line += 1
+            continue
+
         
         # GENERATE SAMPLES
         idx += 1
@@ -121,11 +124,11 @@ def main(input_net_name):
             if np.max(_iou) < 0.3:
                 # _iou with all gts must below 0.3
                 save_file = os.path.join(neg_save_dir, '%s.jpg' % n_idx)
-                f2.write(save_dir + '/negative/%s' % n_idx + ' 0\n')
+                f2.write(net_name + '/negative/%s' % n_idx + ' 0\n')
                 cv2.imwrite(save_file, resized_im)
                 n_idx += 1
                 neg_num += 1
-            print('{} images done, pos: {},  part: {},  neg: {}'.format(idx, p_idx, d_idx, n_idx))
+        # print('{} images done, pos: {},  part: {},  neg: {}'.format(idx, p_idx, d_idx, n_idx))
 
         # 以标记的box为中心，分别生成 negative 5个、positive 和 part 共20个 三种样本，
         for box in bboxes:
@@ -156,7 +159,7 @@ def main(input_net_name):
                 if np.max(_iou) < 0.3:
                     # _iou with all gts must below 0.3
                     save_file = os.path.join(neg_save_dir, "%s.jpg" % n_idx)
-                    f2.write(save_dir + "/negative/%s" % n_idx + ' 0\n')
+                    f2.write(net_name + "/negative/%s" % n_idx + ' 0\n')
                     cv2.imwrite(save_file, resized_im)
                     n_idx += 1
 
@@ -187,19 +190,19 @@ def main(input_net_name):
                 box_ = box.reshape(1, -1)       # reshape (4,) --> (1, 4)
                 if utils.iou(crop_box, box_) >= 0.65:
                     save_file = os.path.join(pos_save_dir, '%s.jpg' % p_idx)
-                    f1.write(save_dir + '/positive/%s' % p_idx + ' 1 %.2f %.2f %.2f %.2f\n' % (
+                    f1.write(net_name + '/positive/%s' % p_idx + ' 1 %.2f %.2f %.2f %.2f\n' % (
                         offset_x1, offset_y1, offset_x2, offset_y2))    # write offset annotation into new file
 
                     cv2.imwrite(save_file, resized_im)
                     p_idx += 1
                 elif utils.iou(crop_box, box_) >= 0.4:
                     save_file = os.path.join(part_save_dir, '%s.jpg' % d_idx)
-                    f3.write(save_dir + '/part/%s' % d_idx + ' -1 %.2f %.2f %.2f %.2f\n' % (
+                    f3.write(net_name + '/part/%s' % d_idx + ' -1 %.2f %.2f %.2f %.2f\n' % (
                         offset_x1, offset_y1, offset_x2, offset_y2))
                     cv2.imwrite(save_file, resized_im)
                     d_idx += 1
             box_idx += 1
-            print('{} images done, pos: {},  part: {},  neg: {}'.format(idx, p_idx, d_idx, n_idx))
+        print('{} images done, pos: {},  part: {},  neg: {}'.format(idx, p_idx, d_idx, n_idx))
 
     f1.close()
     f2.close()
@@ -207,8 +210,9 @@ def main(input_net_name):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("ERROR:%s The specific net, p_net, r_net, or o_net \r\n" % (sys.argv[0]))
-    else:
-        main(sys.argv[1])
+    # if len(sys.argv) != 2:
+    #     print("ERROR:%s The specific net, p_net, r_net, or o_net \r\n" % (sys.argv[0]))
+    # else:
+    #     main(sys.argv[1])
+    main('p_net')
 

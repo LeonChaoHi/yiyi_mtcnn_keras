@@ -15,10 +15,10 @@ NET_NAMES = ['p_net', 'r_net', 'o_net']
 
 LABEL_MAP = {'0': [1, 0], '1': [0, 1], '-1': [0, 0], '-2': [1, 1]}      # neg pos part landmark respectively
 
-GAN_DATA_ROOT_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/data_set'
+GAN_DATA_ROOT_DIR = '/Users/leon/PycharmProjects/BISHE/my_face_detector/data_set'
 
-WIDER_FACE_IMG_DIR = 'G:/BaiduNetdiskDownload/WIDER_train/WIDER_train/images'
-WIDER_FACE_ANNO_FILE = 'G:/BaiduNetdiskDownload/wider_face_split/wider_face_train_bbx_gt.txt'
+WIDER_FACE_IMG_DIR = '/Users/leon/Downloads/WIDER_FACE/WIDER_train/images'
+WIDER_FACE_ANNO_FILE = '/Users/leon/Downloads/WIDER_FACE/wider_face_split/wider_face_train_bbx_gt.txt'
 
 
 CELEBA_IMG_DIR = 'G:/BaiduNetdiskDownload/CelebA/Img/img_celeba.7z/img_celeba/'

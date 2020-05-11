@@ -206,7 +206,10 @@ def py_nms(bboxes, thresh, mode="union"):
 def iou(box, boxes):
     # print('iou----------:',boxes.shape)
     box_area = (box[2] - box[0] + 1) * (box[3] - box[1] + 1)
-    area = (boxes[:, 2] - boxes[:, 0] + 1) * (boxes[:, 3] - boxes[:, 1] + 1)
+    try:
+        area = (boxes[:, 2] - boxes[:, 0] + 1) * (boxes[:, 3] - boxes[:, 1] + 1)
+    except:
+        pass
     xx1 = np.maximum(box[0], boxes[:, 0])
     yy1 = np.maximum(box[1], boxes[:, 1])
     xx2 = np.minimum(box[2], boxes[:, 2])
