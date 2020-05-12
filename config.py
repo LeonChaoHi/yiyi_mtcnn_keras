@@ -28,8 +28,8 @@ CELEBA_ANNO_LANDMARKS_FILE = CELEBA_ANNO_DIR + 'list_landmarks_celeba.txt'
 CELEBA_ANNO_BBOX_FILE = CELEBA_ANNO_DIR + 'list_bbox_celeba.txt'
 
 
-MODEL_WEIGHT_SAVE_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/model_weight'
-LOG_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/log'
+MODEL_WEIGHT_SAVE_DIR = '/Users/leon/Downloads/Face_detector_files/model_weight'
+LOG_DIR = '/Users/leon/Downloads/Face_detector_files/log'
 BATCH_SIZE = 64*5       # 64*7 3+1+1+2
 
 #p_net
@@ -70,8 +70,8 @@ DETECT_WIDEFACE_NUM = 2     # TODO: Changeable param of OHEM(From github comment
 
 
 #test
-TEST_INPUT_IMG_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/test_input_img'
-TEST_OUTPUT_IMG_DIR = 'F:/anaconda/tensorflow/yiyi_mtcnn_keras/test_output_img'
+TEST_INPUT_IMG_DIR = '/Users/leon/PycharmProjects/BISHE/my_face_detector/yiyi_mtcnn_keras/test_input_img'
+TEST_OUTPUT_IMG_DIR = '/Users/leon/PycharmProjects/BISHE/my_face_detector/yiyi_mtcnn_keras/test_output_img'
 
 
 

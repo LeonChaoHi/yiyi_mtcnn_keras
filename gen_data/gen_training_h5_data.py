@@ -29,8 +29,8 @@ def main(input_net_name):
         neg = f.readlines()
     with open('%s/part_%s.txt' % (net_data_dir, target_size), 'r') as f:
         part = f.readlines()
-    with open('%s/landmarks_%s.txt' % (net_data_dir, target_size), 'r') as f:
-        landmark_anno = f.readlines()
+    # with open('%s/landmarks_%s.txt' % (net_data_dir, target_size), 'r') as f:
+    #     landmark_anno = f.readlines()
 
     create_pos_dataset(net_name, pos, target_size, net_data_dir)
     create_neg_dataset(net_name, neg, target_size, net_data_dir)
@@ -45,9 +45,9 @@ def create_pos_dataset(net_name, pos, target_size, out_dir):
 
         words = line.strip().split()        # words: name label=0,1,-1 [landmark]
         if '.jpg' in words[0]:
-            image_file_name = words[0]
+            image_file_name = os.path.join(GAN_DATA_ROOT_DIR, words[0])
         else:    
-            image_file_name = words[0] + '.jpg'     # seems no .jpg here when writing annotations
+            image_file_name = os.path.join(GAN_DATA_ROOT_DIR, words[0] + '.jpg')     # seems no .jpg here when writing annotations
 
         im = cv2.imread(image_file_name)    # read img into tensor
         im = resize(im, target_size)
@@ -64,7 +64,7 @@ def create_pos_dataset(net_name, pos, target_size, out_dir):
             print('pos data doing, total: {}'.format(len(ims)))
     landmark_data = list(zip(labels, ims, landmarks))           # zip to list of tuples with respect to samples
     random.shuffle(landmark_data)
-    labels, ims, landmarks = zip(*landmark_data)               # reverse zip to list of 3 tuples(labels ims & landmarks)
+    labels, ims, landmarks = zip(*landmark_data)               # reverse zip to list of 3 arrays(labels ims & landmarks)
 
     landmark_data_filename = os.path.join(out_dir, 'pos_shuffle.h5')        # save shuffled data as h5 file
     save_dict_to_hdf5({'labels': labels, 'ims': ims, 'bbox': landmarks}, landmark_data_filename)
@@ -80,9 +80,9 @@ def create_neg_dataset(net_name, neg, target_size, out_dir):
 
         words = line.strip().split()
         if '.jpg' in words[0]:
-            image_file_name = words[0]
+            image_file_name = image_file_name = os.path.join(GAN_DATA_ROOT_DIR, words[0])
         else:    
-            image_file_name = words[0] + '.jpg'
+            image_file_name = image_file_name = os.path.join(GAN_DATA_ROOT_DIR, words[0] + '.jpg')
 
         im = cv2.imread(image_file_name)
         im = resize(im, target_size)
@@ -115,9 +115,9 @@ def create_part_dataset(net_name, part, target_size, out_dir):
 
         words = line.strip().split()
         if '.jpg' in words[0]:
-            image_file_name = words[0]
+            image_file_name = image_file_name = os.path.join(GAN_DATA_ROOT_DIR, words[0])
         else:    
-            image_file_name = words[0] + '.jpg'
+            image_file_name = image_file_name = os.path.join(GAN_DATA_ROOT_DIR, words[0] + '.jpg')
 
         im = cv2.imread(image_file_name)
         im = resize(im, target_size)
@@ -177,8 +177,8 @@ def create_landmark_dataset(net_name, landmark_anno, target_size, out_dir):
     print('landmarks data done, total: {}'.format(len(ims)))
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("ERROR:%s The specific net, p_net, r_net, or o_net \r\n" % (sys.argv[0]))
-    else:
-        main(sys.argv[1])
-    
+    # if len(sys.argv) != 2:
+    #     print("ERROR:%s The specific net, p_net, r_net, or o_net \r\n" % (sys.argv[0]))
+    # else:
+    #     main(sys.argv[1])
+    main('p_net')

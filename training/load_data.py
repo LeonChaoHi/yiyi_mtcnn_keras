@@ -19,7 +19,7 @@ from config import LABEL_MAP
 
 
 class DataGenerator:
-    def __init__(self, pos_dataset_path, neg_dataset_path, part_dataset_path, landmarks_dataset_path, batch_size, im_size):
+    def __init__(self, pos_dataset_path, neg_dataset_path, part_dataset_path, batch_size, im_size):
         self.im_size = im_size
         
         self.pos_file = h5py.File(pos_dataset_path, 'r')
@@ -37,8 +37,8 @@ class DataGenerator:
         self.neg_batch_size = int(np.ceil(self.batch_size*neg_radio))
         self.landmark_batch_size = int(np.ceil(self.batch_size*landmark_radio))
         
-        print('pos_part_batch_size---:',self.pos_part_batch_size)
-        print('neg_batch_size---:',self.neg_batch_size)
+        print('pos_part_batch_size---:', self.pos_part_batch_size)
+        print('neg_batch_size---:', self.neg_batch_size)
         # print('landmark_batch_size---:',self.landmark_batch_size)
         
         self.pos_part_start = 0
