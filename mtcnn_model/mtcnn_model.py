@@ -17,8 +17,8 @@ def p_net(training=False):
     y = layers.Conv2D(32, 3, padding='valid', strides=(1, 1), name='p_conv3')(y)
     y = layers.PReLU(shared_axes=(1, 2), name='p_prelu3')(y)
 
-    classifier = layers.Conv2D(2, 1, activation='softmax', name='p_classifier')(y)
-    bbox = layers.Conv2D(4, 1, name='p_bbox')(y)
+    classifier = layers.Conv2D(2, 1, padding='valid', activation='softmax', name='p_classifier')(y)
+    bbox = layers.Conv2D(4, 1, padding='valid', name='p_bbox')(y)
     landmark = layers.Conv2D(10, 1, padding='valid', name='p_landmark')(y)
 
     if training:

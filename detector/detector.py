@@ -98,8 +98,8 @@ class Detector:
             print('inputs shape: {}'.format(inputs.shape))
             labels, bboxes, landmarks = self.p_net.predict(inputs)      # feed into p_net and get output
 
-            labels = np.squeeze(labels)     # omit batch dimension: (1, h, w, 2) --> (h, w, 2)
-            bboxes = np.squeeze(bboxes)     # omit batch dimension: (1, h, w, 4) --> (h, w, 4)
+            labels = np.squeeze(labels, axis=0)     # omit batch dimension: (1, h, w, 2) --> (h, w, 2)
+            bboxes = np.squeeze(bboxes, axis=0)     # omit batch dimension: (1, h, w, 4) --> (h, w, 4)
             print('labels', labels.shape)
             print('bboxes', bboxes.shape)
             boxes = generate_bbox(labels[:, :, 1], bboxes, current_scale, self.threshold[0])   # ((h,w),(h,w,4))-->(n,9)
