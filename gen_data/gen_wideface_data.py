@@ -214,5 +214,5 @@ if __name__ == '__main__':
     #     print("ERROR:%s The specific net, p_net, r_net, or o_net \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1])
-    main('p_net')
+    main('r_net')
 
