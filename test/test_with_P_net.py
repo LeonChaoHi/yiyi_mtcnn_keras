@@ -16,8 +16,8 @@ def main(image_file):
 
     # detection
     image_size = min(image.shape[0], image.shape[1])
-    detector = Detector(weight_dir=MODEL_WEIGHT_SAVE_DIR, mode=2, min_face_size=image_size/10)
-    bbox, bboxes, landmarks = detector.predict(image)
+    detector = Detector(weight_dir=MODEL_WEIGHT_SAVE_DIR, mode=1, min_face_size=image_size/10)
+    bbox, bboxes = detector.predict(image)
     labels = bboxes[:, 4]
 
     w = np.array(bboxes[:, 2] - bboxes[:, 0])
@@ -25,7 +25,7 @@ def main(image_file):
 
     print('bboxes-shape---:', bboxes.shape)
 
-    bboxes_ranked = bboxes[np.argsort(labels)[-20:], :]
+    bboxes_ranked = bboxes[np.argsort(labels)[-10:], :]
     # bboxes_ranked = bboxes
 
     for bbox_ in bboxes_ranked:
@@ -44,4 +44,4 @@ if __name__ == '__main__':
     #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1]
-    main('02.jpg')
+    main('00.jpg')

@@ -10,6 +10,7 @@ import os
 import sys
 sys.path.append(".")
 import keras.backend.tensorflow_backend as TK
+import keras.backend as K
 import numpy as np
 import tensorflow as tf
 from keras.callbacks import TensorBoard, ModelCheckpoint
@@ -114,19 +115,56 @@ def landmark_ohem(label_true, landmark_true, landmark_pred):
 
 
 def _loss_func(y_true, y_pred):     # calculate total loss
-    labels_true = y_true[:, :2]
-    bbox_true = y_true[:, 2:6]
-    landmark_true = y_true[:, 6:]
+    # labels_true = y_true[:, :1]
+    # bbox_true = y_true[:, 2:6]
+    # landmark_true = y_true[:, 6:]
+    #
+    # labels_pred = y_pred[:, :1]
+    # bbox_pred = y_pred[:, 2:6]
+    # landmark_pred = y_pred[:, 6:]
+    #
+    # label_loss = label_ohem(labels_true, labels_pred)
+    # bbox_loss = bbox_ohem(labels_true, bbox_true, bbox_pred)
+    # landmark_loss = landmark_ohem(labels_true, landmark_true, landmark_pred)
 
-    labels_pred = y_pred[:, :2]
-    bbox_pred = y_pred[:, 2:6]
-    landmark_pred = y_pred[:, 6:]
+    zero_index = K.zeros_like(y_true[:, 0])
+    ones_index = K.ones_like(y_true[:, 0])
 
-    label_loss = label_ohem(labels_true, labels_pred)
-    bbox_loss = bbox_ohem(labels_true, bbox_true, bbox_pred)
-    landmark_loss = landmark_ohem(labels_true, landmark_true, landmark_pred)
+    # Classifier
+    labels = y_true[:, 0]
+    class_preds = y_pred[:, 0]
+    bi_crossentropy_loss = -labels * K.log(class_preds) - (1 - labels) * K.log(1 - class_preds)
 
-    return label_loss + bbox_loss * 0.5 + landmark_loss * 0.5
+    classify_valid_index = tf.where(K.less(y_true[:, 0], 0), zero_index, ones_index)
+    classify_keep_num = K.cast(tf.reduce_sum(classify_valid_index) * num_keep_radio, dtype=tf.int32)
+    # For classification problem, only pick 70% of the valid samples.
+
+    classify_loss_sum = bi_crossentropy_loss * classify_valid_index
+    classify_loss_sum_filtered, _ = tf.nn.top_k(classify_loss_sum, k=classify_keep_num)
+    classify_loss = K.mean(classify_loss_sum_filtered)
+
+    # Bounding box regressor
+    rois = y_true[:, 1: 5]
+    roi_preds = y_pred[:, 1: 5]
+    # roi_raw_mean_square_error = K.sum(K.square(rois - roi_preds), axis = 1) # mse
+    roi_raw_smooth_l1_loss = K.mean(tf.where(K.abs(rois - roi_preds) < 1, 0.5 * K.square(rois - roi_preds),
+                                             K.abs(rois - roi_preds) - 0.5))  # L1 Smooth Loss
+
+    roi_valid_index = tf.where(K.equal(K.abs(y_true[:, 0]), 1), ones_index, zero_index)
+    roi_keep_num = K.cast(tf.reduce_sum(roi_valid_index), dtype=tf.int32)
+
+    # roi_valid_mean_square_error = roi_raw_mean_square_error * roi_valid_index
+    # roi_filtered_mean_square_error, _ = tf.nn.top_k(roi_valid_mean_square_error, k = roi_keep_num)
+    # roi_loss = K.mean(roi_filtered_mean_square_error)
+    roi_valid_smooth_l1_loss = roi_raw_smooth_l1_loss * roi_valid_index
+    roi_filtered_smooth_l1_loss, _ = tf.nn.top_k(roi_valid_smooth_l1_loss, k=roi_keep_num)
+    roi_loss = K.mean(roi_filtered_smooth_l1_loss)
+
+    loss = classify_loss * 1 + roi_loss * 0.5
+
+    return loss
+
+    # return label_loss + bbox_loss * 0.5 + landmark_loss * 0.5
 
 
 def _onet_loss_func(y_true, y_pred):

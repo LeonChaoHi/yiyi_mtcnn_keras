@@ -7,28 +7,27 @@ Created on Mon Aug 20 21:44:08 2018
 
 from keras import Input, layers, Model
 
+
 def p_net(training=False):
     x = Input(shape=(12, 12, 3)) if training else Input(shape=(None, None, 3))
     y = layers.Conv2D(10, 3, padding='valid', strides=(1, 1), name='p_conv1')(x)
     y = layers.PReLU(shared_axes=(1, 2), name='p_prelu1')(y)
-    y = layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='p_max_pooling1')(y)
+    y = layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2), padding='same', name='p_max_pooling1')(y)
     y = layers.Conv2D(16, 3, padding='valid', strides=(1, 1), name='p_conv2')(y)
     y = layers.PReLU(shared_axes=(1, 2), name='p_prelu2')(y)
     y = layers.Conv2D(32, 3, padding='valid', strides=(1, 1), name='p_conv3')(y)
     y = layers.PReLU(shared_axes=(1, 2), name='p_prelu3')(y)
 
-    classifier = layers.Conv2D(2, 1, padding='valid', activation='softmax', name='p_classifier')(y)
+    classifier = layers.Conv2D(1, 1, padding='valid', activation='sigmoid', name='p_classifier')(y)
     bbox = layers.Conv2D(4, 1, padding='valid', name='p_bbox')(y)
-    landmark = layers.Conv2D(10, 1, padding='valid', name='p_landmark')(y)
 
     if training:
-        classifier = layers.Reshape((2,), name='p_classifier1')(classifier) # reshape (1, 1, c) --> (c,)
+        classifier = layers.Reshape((1,), name='p_classifier1')(classifier) # reshape (1, 1, c) --> (c,)
         bbox = layers.Reshape((4,), name='p_bbox1')(bbox)
-        landmark = layers.Reshape((10,), name='p_landmark1')(landmark)
-        outputs = layers.concatenate([classifier, bbox, landmark])
+        outputs = layers.Concatenate()([classifier, bbox])
         model = Model(inputs=[x], outputs=[outputs], name='P_Net')      # training output shape: ((2+4+10),)
     else:
-        model = Model(inputs=[x], outputs=[classifier, bbox, landmark], name='P_Net')
+        model = Model(inputs=[x], outputs=[classifier, bbox], name='P_Net')
     return model
 
 

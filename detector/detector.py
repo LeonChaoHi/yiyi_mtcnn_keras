@@ -96,13 +96,13 @@ class Detector:
             # get b-boxes of current scale
             inputs = np.array([im_resized])     # unsqueeze
             print('inputs shape: {}'.format(inputs.shape))
-            labels, bboxes, landmarks = self.p_net.predict(inputs)      # feed into p_net and get output
+            labels, bboxes = self.p_net.predict(inputs)      # feed into p_net and get output
 
             labels = np.squeeze(labels, axis=0)     # omit batch dimension: (1, h, w, 2) --> (h, w, 2)
             bboxes = np.squeeze(bboxes, axis=0)     # omit batch dimension: (1, h, w, 4) --> (h, w, 4)
             print('labels', labels.shape)
             print('bboxes', bboxes.shape)
-            boxes = generate_bbox(labels[:, :, 1], bboxes, current_scale, self.threshold[0])   # ((h,w),(h,w,4))-->(n,9)
+            boxes = generate_bbox(labels[:, :, 0], bboxes, current_scale, self.threshold[0])   # ((h,w),(h,w,4))-->(n,9)
 
             # update next scale and image
             current_scale *= self.scale_factor
@@ -118,7 +118,7 @@ class Detector:
             all_boxes.append(boxes)     # all_boxes: list of nd-arrays regarding different scales
 
         if len(all_boxes) == 0:
-            return None, None, None
+            return None, None
 
         return self.refine_bboxes(all_boxes)
 
@@ -218,7 +218,7 @@ class Detector:
                              all_boxes[:, 3] + all_boxes[:, 8] * bbh,
                              all_boxes[:, 4]])
         boxes_c = boxes_c.T
-        return boxes, boxes_c, None
+        return boxes, boxes_c
 
     @staticmethod
     def calibrate_box(bbox, reg):     # used in detect_r_net & o_net

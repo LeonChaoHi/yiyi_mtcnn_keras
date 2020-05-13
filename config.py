@@ -28,8 +28,8 @@ CELEBA_ANNO_LANDMARKS_FILE = CELEBA_ANNO_DIR + 'list_landmarks_celeba.txt'
 CELEBA_ANNO_BBOX_FILE = CELEBA_ANNO_DIR + 'list_bbox_celeba.txt'
 
 
-MODEL_WEIGHT_SAVE_DIR = '/Users/leon/Downloads/Face_detector_files/model_weight'
-LOG_DIR = '/Users/leon/Downloads/Face_detector_files/log'
+MODEL_WEIGHT_SAVE_DIR = '/Users/leon/PycharmProjects/BISHE/my_face_detector/model_weight'
+LOG_DIR = '/Users/leon/PycharmProjects/BISHE/my_face_detector/log'
 BATCH_SIZE = 64*5       # 64*7 3+1+1+2
 
 #p_net
