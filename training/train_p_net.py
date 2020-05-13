@@ -33,7 +33,7 @@ def train_with_data_generator(dataset_root_dir = GAN_DATA_ROOT_DIR, weights_file
     callbacks, model_file = create_callbacks_model_file(net_name, 1)  # [checkpoint, tensor_board], model_file_path
 
     # call p-net training function
-    _p_net = train_p_net_with_data_generator(data_gen, steps_per_epoch,
+    _p_net, History = train_p_net_with_data_generator(data_gen, steps_per_epoch,
                                              initial_epoch=0,
                                              epochs=epochs,
                                              lr=learning_rate,

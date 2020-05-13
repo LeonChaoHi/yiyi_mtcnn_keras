@@ -8,6 +8,7 @@ import h5py
 import cv2
 import numpy as np
 import glob
+import config
 
 def resize(im, target_size):
     h, w, ch = im.shape
@@ -104,14 +105,14 @@ def load_weights(weights_dir):
     r_net_weight = None
     o_net_weight = None
     for wf in weights_files:
-        if 'p_net' in wf:
+        if 'p_net' in wf and wf[-4] == str(config.PNET_VERSION):
             p_net_weight = wf
-        elif 'r_net' in wf:
+        elif 'r_net' in wf and wf[-4] == str(config.RNET_VERSION):
             r_net_weight = wf
         elif 'o_net' in wf:
             o_net_weight = wf
-        else:
-            raise ValueError('No valid weights files !')
+        # else:
+        #     raise ValueError('No valid weights files !')
 
     if p_net_weight is None and r_net_weight is None and o_net_weight is None:
         raise ValueError('No valid weights files !')

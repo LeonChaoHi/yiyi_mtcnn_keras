@@ -115,17 +115,6 @@ def landmark_ohem(label_true, landmark_true, landmark_pred):
 
 
 def _loss_func(y_true, y_pred):     # calculate total loss
-    # labels_true = y_true[:, :1]
-    # bbox_true = y_true[:, 2:6]
-    # landmark_true = y_true[:, 6:]
-    #
-    # labels_pred = y_pred[:, :1]
-    # bbox_pred = y_pred[:, 2:6]
-    # landmark_pred = y_pred[:, 6:]
-    #
-    # label_loss = label_ohem(labels_true, labels_pred)
-    # bbox_loss = bbox_ohem(labels_true, bbox_true, bbox_pred)
-    # landmark_loss = landmark_ohem(labels_true, landmark_true, landmark_pred)
 
     zero_index = K.zeros_like(y_true[:, 0])
     ones_index = K.ones_like(y_true[:, 0])
@@ -133,7 +122,7 @@ def _loss_func(y_true, y_pred):     # calculate total loss
     # Classifier
     labels = y_true[:, 0]
     class_preds = y_pred[:, 0]
-    bi_crossentropy_loss = -labels * K.log(class_preds) - (1 - labels) * K.log(1 - class_preds)
+    bi_crossentropy_loss = -labels * K.log(class_preds + 1e-10) - (1 - labels) * K.log(1 - class_preds + 1e-10)
 
     classify_valid_index = tf.where(K.less(y_true[:, 0], 0), zero_index, ones_index)
     classify_keep_num = K.cast(tf.reduce_sum(classify_valid_index) * num_keep_radio, dtype=tf.int32)
@@ -193,12 +182,12 @@ def train_p_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, 
 
     _p_net.compile(Adam(lr=lr), loss=_loss_func, metrics=['accuracy'])
 
-    _p_net.fit_generator(data_gen,
-                         steps_per_epoch=steps_per_epoch,
-                         initial_epoch=initial_epoch,
-                         epochs=epochs,
-                         callbacks=callbacks)
-    return _p_net
+    History = _p_net.fit_generator(data_gen,
+                                   steps_per_epoch=steps_per_epoch,
+                                   nitial_epoch=initial_epoch,
+                                   epochs=epochs,
+                                   callbacks=callbacks)
+    return _p_net, History
 
 def train_r_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, epochs=1000, lr=0.001,
                                     callbacks=None, weights_file=None):

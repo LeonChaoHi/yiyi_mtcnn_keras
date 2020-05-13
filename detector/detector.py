@@ -30,15 +30,11 @@ class Detector:
         # 实现图片金字塔
         assert scale_factor < 1
         
-        # 暂时没有使用
-        self.slide_window = slide_window
-        self.stride = stride
-        
         self.mode = mode
         # 图片金字塔,图片不能小于这个
         self.min_face_size = min_face_size
         # 概率大于threshold的bbox才用
-        self.threshold = [0.6, 0.7, 0.7] if threshold is None else threshold
+        self.threshold = [0.6, 0.9, 0.7] if threshold is None else threshold
         # 实现图片金字塔,以这个比例缩小图片
         self.scale_factor = scale_factor
 
@@ -74,7 +70,7 @@ class Detector:
         return self.detect_with_p_net(im)
 
     def predict_with_pr_net(self, im):
-        boxes, boxes_c, landmark = self.detect_with_p_net(im)
+        boxes, boxes_c = self.detect_with_p_net(im)
         return self.detect_with_r_net(im, boxes_c)
 
     def predict_with_pro_net(self, im):
@@ -134,27 +130,24 @@ class Detector:
             tmp = np.zeros((tmph[i], tmpw[i], 3), dtype=np.uint8)
             tmp[dy[i]:edy[i] + 1, dx[i]:edx[i] + 1, :] = im[y[i]:ey[i] + 1, x[i]:ex[i] + 1, :]
             cropped_ims[i, :, :, :] = (cv2.resize(tmp, (24, 24))-127.5) / 128
-        # cls_scores : num_data*2
-        # reg: num_data*4
-        # landmark: num_data*10
-        cls_scores, reg, _ = self.r_net.predict(cropped_ims)        # feed cropped images into r_net
-        cls_scores = cls_scores[:, 1]
+
+        cls_scores, reg= self.r_net.predict(cropped_ims)        # feed cropped images into r_net
+        cls_scores = cls_scores[:, 0]
 
         keep_inds = np.where(cls_scores > self.threshold[1])[0]
         if len(keep_inds) > 0:
             boxes = dets[keep_inds]     # get valid proposing boxes
             boxes[:, 4] = cls_scores[keep_inds]
             reg = reg[keep_inds]        # regressed offsets
-            # landmark = landmark[keep_inds]
         else:
-            return None, None, None
+            return None, None
 
-        keep = py_nms(boxes, 0.6)   # NMS
-        boxes = boxes[keep]
+        boxes_c = self.calibrate_box(boxes, reg)
 
-        boxes_c = self.calibrate_box(boxes, reg[keep])
+        keep = py_nms(boxes_c, 0.6, mode='minimum')   # NMS
+        boxes_c = boxes_c[keep]
 
-        return boxes, boxes_c, None
+        return boxes, boxes_c
 
     def detect_with_o_net(self, im, dets):
         h, w, c = im.shape

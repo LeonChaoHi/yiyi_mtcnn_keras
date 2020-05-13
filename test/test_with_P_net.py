@@ -25,7 +25,7 @@ def main(image_file):
 
     print('bboxes-shape---:', bboxes.shape)
 
-    bboxes_ranked = bboxes[np.argsort(labels)[-10:], :]
+    bboxes_ranked = bboxes[np.argsort(labels)[:], :]
     # bboxes_ranked = bboxes
 
     for bbox_ in bboxes_ranked:

@@ -45,4 +45,4 @@ if __name__ == '__main__':
     #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1]
-    main('test_input_img/00.jpg')
+    main('test_input_img/00_duibi.jpg')

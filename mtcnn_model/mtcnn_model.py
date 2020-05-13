@@ -33,27 +33,46 @@ def p_net(training=False):
 
 def r_net(training=False):
     x = Input(shape=(24, 24, 3))
-    y = layers.Conv2D(28, 3, padding='same', strides=(1, 1), name='r_conv1')(x)
+
+    y = layers.Conv2D(32, 3, padding='valid', strides=(1, 1), name='r_conv1')(x)
     y = layers.PReLU(shared_axes=(1, 2), name='r_prelu1')(y)
-    y = layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='p_max_pooling1')(y)
-    y = layers.Conv2D(48, 3, padding='valid', strides=(1, 1), name='r_conv2')(y)
+    y = layers.MaxPooling2D(pool_size=(3, 3), padding='valid', strides=(2, 2), name='p_max_pooling1')(y)
+
+    y = layers.Conv2D(64, 3, padding='valid', strides=(1, 1), name='r_conv2')(y)
     y = layers.PReLU(shared_axes=(1, 2), name='r_prelu2')(y)
-    y = layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='p_max_pooling2')(y)
-    y = layers.Conv2D(64, 2, padding='valid', name='r_conv3')(y)
+    y = layers.MaxPooling2D(pool_size=(3, 3), padding='same', strides=(2, 2), name='p_max_pooling2')(y)
+
+    y = layers.Conv2D(64, 3, padding='same', strides=(1, 1), name='r_conv3')(y)
     y = layers.PReLU(shared_axes=(1, 2), name='r_prelu3')(y)
-    y = layers.Dense(128, name='r_dense')(y)
-    y = layers.PReLU(name='r_prelu4')(y)
+    y = layers.MaxPooling2D(pool_size=(3, 3), padding='same', strides=(2, 2), name='p_max_pooling3')(y)
+
+    y = layers.Conv2D(128, 2, padding='valid', name='r_conv4')(y)
+    y = layers.PReLU(shared_axes=(1, 2), name='r_prelu4')(y)
+
+    y = layers.Dense(256, name='r_dense')(y)
+    y = layers.PReLU(name='r_prelu5')(y)
     y = layers.Flatten()(y)
 
-    classifier = layers.Dense(2, activation='softmax', name='r_classifier')(y)  # training output shape: ((2+4+10),)
+    # y = layers.Conv2D(28, 3, padding='same', strides=(1, 1), name='r_conv1')(x)
+    # y = layers.PReLU(shared_axes=(1, 2), name='r_prelu1')(y)
+    # y = layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='p_max_pooling1')(y)
+    # y = layers.Conv2D(48, 3, padding='valid', strides=(1, 1), name='r_conv2')(y)
+    # y = layers.PReLU(shared_axes=(1, 2), name='r_prelu2')(y)
+    # y = layers.MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='p_max_pooling2')(y)
+    # y = layers.Conv2D(64, 2, padding='valid', name='r_conv3')(y)
+    # y = layers.PReLU(shared_axes=(1, 2), name='r_prelu3')(y)
+    # y = layers.Dense(128, name='r_dense')(y)
+    # y = layers.PReLU(name='r_prelu4')(y)
+    # y = layers.Flatten()(y)
+
+    classifier = layers.Dense(1, activation='sigmoid', name='r_classifier')(y)  # training output shape: ((2+4+10),)
     bbox = layers.Dense(4, name='r_bbox')(y)
-    landmark = layers.Dense(10, name='r_landmark')(y)
 
     if training:
-        outputs = layers.concatenate([classifier, bbox, landmark])
+        outputs = layers.concatenate([classifier, bbox])
         model = Model(inputs=[x], outputs=[outputs], name='R_Net')
     else:
-        model = Model(inputs=[x], outputs=[classifier, bbox, landmark], name='R_Net')
+        model = Model(inputs=[x], outputs=[classifier, bbox], name='R_Net')
 
     return model
 

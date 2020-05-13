@@ -23,7 +23,6 @@ def train_with_data_generator(dataset_root_dir = GAN_DATA_ROOT_DIR, weights_file
     pos_dataset_path = os.path.join(dataset_dir, 'pos_shuffle.h5')
     neg_dataset_path = os.path.join(dataset_dir, 'neg_shuffle.h5')
     part_dataset_path = os.path.join(dataset_dir, 'part_shuffle.h5')
-    # landmarks_dataset_path = os.path.join(dataset_dir, 'landmarks_shuffle.h5')
 
     data_generator = DataGenerator(pos_dataset_path, neg_dataset_path, part_dataset_path, batch_size,
                                    im_size=NET_SIZE['r_net'])
