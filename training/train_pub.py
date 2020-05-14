@@ -172,7 +172,6 @@ def _onet_loss_func(y_true, y_pred):
     return label_loss + bbox_loss * 0.5 + landmark_loss     # ratio is different
 
 
-
 def train_p_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, epochs=1000, lr=0.001,
                                     callbacks=None, weights_file=None):
     _p_net = p_net(training=True)
@@ -189,6 +188,7 @@ def train_p_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, 
                                    callbacks=callbacks)
     return _p_net, History
 
+
 def train_r_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, epochs=1000, lr=0.001,
                                     callbacks=None, weights_file=None):
     _r_net = r_net(training=True)
@@ -204,6 +204,7 @@ def train_r_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, 
                          epochs=epochs,
                          callbacks=callbacks)
     return _r_net
+
 
 def train_o_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, epochs=1000, lr=0.001,
                                     callbacks=None, weights_file=None):
@@ -234,4 +235,3 @@ def create_callbacks_model_file(net_name, epochs=1):
 
     checkpoint = ModelCheckpoint(model_file_path, verbose=0, save_weights_only=True, period=epochs)
     return [checkpoint, tensor_board], model_file_path
-

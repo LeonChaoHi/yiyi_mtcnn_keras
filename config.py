@@ -33,7 +33,7 @@ LOG_DIR = '/Users/leon/PycharmProjects/BISHE/my_face_detector/log'
 BATCH_SIZE = 64*5       # 64*7 3+1+1+2
 
 #p_net
-PNET_VERSION = 0
+PNET_VERSION = 1
 
 PNET_EPOCHS = 1
 PNET_LEARNING_RATE = 0.001
@@ -46,7 +46,7 @@ PNET_FACE_NEG_NUM = 5       # num for each pic, not for entire dataset
 PNET_POS_PART_NUM = 20
 
 #r_net
-RNET_VERSION = 0
+RNET_VERSION = 1
 
 RNET_EPOCHS = 1
 RNET_LEARNING_RATE = 0.001

@@ -31,7 +31,7 @@ def train_with_data_generator(dataset_root_dir = GAN_DATA_ROOT_DIR, weights_file
 
     callbacks, model_file = create_callbacks_model_file(net_name, epochs)
 
-    _r_net = train_r_net_with_data_generator(data_gen, steps_per_epoch,
+    _r_net = train_r_net_with_data_generator(data_gen, steps_per_epoch=steps_per_epoch,
                                              initial_epoch=0,
                                              epochs=epochs,
                                              lr=learning_rate,
