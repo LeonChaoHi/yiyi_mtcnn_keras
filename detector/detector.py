@@ -91,13 +91,13 @@ class Detector:
 
             # get b-boxes of current scale
             inputs = np.array([im_resized])     # unsqueeze
-            print('inputs shape: {}'.format(inputs.shape))
+            # print('inputs shape: {}'.format(inputs.shape))
             labels, bboxes = self.p_net.predict(inputs)      # feed into p_net and get output
 
             labels = np.squeeze(labels, axis=0)     # omit batch dimension: (1, h, w, 2) --> (h, w, 2)
             bboxes = np.squeeze(bboxes, axis=0)     # omit batch dimension: (1, h, w, 4) --> (h, w, 4)
-            print('labels', labels.shape)
-            print('bboxes', bboxes.shape)
+            # print('labels', labels.shape)
+            # print('bboxes', bboxes.shape)
             boxes = generate_bbox(labels[:, :, 0], bboxes, current_scale, self.threshold[0])   # ((h,w),(h,w,4))-->(n,9)
 
             # update next scale and image
