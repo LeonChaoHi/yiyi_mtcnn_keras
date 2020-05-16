@@ -49,13 +49,14 @@ def main(image_file):
     # draw b-boxes and head axises in image
     for i in range(num_boxes):
         # print('bbox score--:',bbox[4])
-        # cv2.putText(image,str(np.round(bbox[4],2)),(int(bbox[0]),int(bbox[1])),cv2.FONT_HERSHEY_TRIPLEX,1,color=(255,0,255))
         bbox_ = bboxes[i]
         pose_ = poses[i]
+        cv2.putText(image, str(np.round(bbox_[4], 2)) + str(np.round(pose_, 2)), (int(bbox_[0]), int(bbox_[1])),
+                    cv2.FONT_HERSHEY_TRIPLEX, 0.5, color=(255, 0, 255))
         cv2.rectangle(image, (int(bbox_[0]), int(bbox_[1])), (int(bbox_[2]), int(bbox_[3])), (0, 0, 255))
         tdy = round((bbox_[1]+bbox_[3])/2)
         tdx = round((bbox_[0]+bbox_[2])/2)
-        image = draw_axis(image, yaw=pose_[0], pitch=pose_[1], roll=pose_[2], tdx=tdx, tdy=tdy)
+        image = draw_axis(image, yaw=pose_[0], pitch=pose_[1], roll=0, tdx=tdx, tdy=tdy)
 
     cv2.imwrite(output_img_full_path, image)
     # cv2.imshow('yy', image)
@@ -67,4 +68,4 @@ if __name__ == '__main__':
     #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1]
-    main('06.png')
+    main('09.jpg')
