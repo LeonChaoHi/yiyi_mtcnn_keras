@@ -23,7 +23,7 @@ def main(image_file):
     bbox, bboxes = detector.predict(image)
 
     labels = bboxes[:, 4]
-    bboxes = bboxes[np.argsort(labels)[-1:], :]     # TODO: test only
+    bboxes = bboxes[np.argsort(labels)[:], :]     # TODO: test only
 
 
     print('bboxes-shape---:', bboxes.shape)
@@ -56,7 +56,7 @@ def main(image_file):
         cv2.rectangle(image, (int(bbox_[0]), int(bbox_[1])), (int(bbox_[2]), int(bbox_[3])), (0, 0, 255))
         tdy = round((bbox_[1]+bbox_[3])/2)
         tdx = round((bbox_[0]+bbox_[2])/2)
-        image = draw_axis(image, yaw=pose_[0], pitch=pose_[1], roll=0, tdx=tdx, tdy=tdy)
+        image = draw_axis(image, yaw=pose_[0], pitch=pose_[1], roll=pose_[2], tdx=tdx, tdy=tdy)
 
     cv2.imwrite(output_img_full_path, image)
     # cv2.imshow('yy', image)
@@ -68,4 +68,4 @@ if __name__ == '__main__':
     #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1]
-    main('09.jpg')
+    main('20130530_03_Driv_108_f .jpg')

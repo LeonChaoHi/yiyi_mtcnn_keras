@@ -183,7 +183,7 @@ def train_p_net_with_data_generator(data_gen, steps_per_epoch, initial_epoch=0, 
 
     History = _p_net.fit_generator(data_gen,
                                    steps_per_epoch=steps_per_epoch,
-                                   nitial_epoch=initial_epoch,
+                                   initial_epoch=initial_epoch,
                                    epochs=epochs,
                                    callbacks=callbacks)
     return _p_net, History

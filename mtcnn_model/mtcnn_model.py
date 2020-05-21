@@ -6,6 +6,7 @@ Created on Mon Aug 20 21:44:08 2018
 """
 
 from keras import Input, layers, Model
+from keras.utils import plot_model
 
 
 def p_net(training=False):
@@ -107,11 +108,13 @@ def o_net(training=False):
 
 
 if __name__ == '__main__':
-    p = p_net()
+    p = p_net(True)
     p.summary()
+    plot_model(p, 'p_net.png', show_shapes=True)
 
-    r = r_net()
+    r = r_net(True)
     r.summary()
+    plot_model(r, 'r_net.png', show_shapes=True)
 
     o = o_net()
     o.summary()

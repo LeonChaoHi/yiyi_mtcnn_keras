@@ -16,7 +16,7 @@ def main(image_file):
 
     # detection
     image_size = min(image.shape[0], image.shape[1])
-    detector = Detector(weight_dir=MODEL_WEIGHT_SAVE_DIR, mode=2, min_face_size=image_size/10)
+    detector = Detector(weight_dir=MODEL_WEIGHT_SAVE_DIR, mode=2, min_face_size=50)
     bbox, bboxes = detector.predict(image)
     labels = bboxes[:, 4]
 
@@ -25,14 +25,14 @@ def main(image_file):
 
     print('bboxes-shape---:', bboxes.shape)
 
-    bboxes_ranked = bboxes[np.argsort(labels)[:], :]
+    bboxes_ranked = bboxes[np.argsort(labels)[-1:], :]
     # bboxes_ranked = bboxes
 
     for bbox_ in bboxes_ranked:
         # print('bbox score--:',bbox[4])
-        cv2.putText(image, str(np.round(bbox_[4], 2)), (int(bbox_[0]), int(bbox_[1])),
-                    cv2.FONT_HERSHEY_TRIPLEX, 0.5, color=(255, 0, 255))
-        cv2.rectangle(image, (int(bbox_[0]), int(bbox_[1])), (int(bbox_[2]), int(bbox_[3])), (0, 0, 255))
+        # cv2.putText(image, str(np.round(bbox_[4], 2)), (int(bbox_[0]), int(bbox_[1])),
+        #             cv2.FONT_HERSHEY_TRIPLEX, 0.5, color=(255, 0, 255))
+        cv2.rectangle(image, (int(bbox_[0]), int(bbox_[1])), (int(bbox_[2]), int(bbox_[3])), color=(0, 0, 255), thickness=2)
 
     cv2.imwrite(output_img_full_path, image)
     # cv2.imshow('yy', image)
@@ -44,4 +44,4 @@ if __name__ == '__main__':
     #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1]
-    main('00.jpg')
+    main('11.png')

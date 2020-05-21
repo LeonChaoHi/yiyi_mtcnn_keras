@@ -20,7 +20,7 @@ class Detector:
                  stride=2,
                  min_face_size=24,
                  threshold=None,   #概率大于threshold的bbox才用
-                 scale_factor=0.65,
+                 scale_factor=0.709,
                  mode=3):
         # mode
         # 1:用p_net 生成r_net的数据
@@ -34,7 +34,7 @@ class Detector:
         # 图片金字塔,图片不能小于这个
         self.min_face_size = min_face_size
         # 概率大于threshold的bbox才用
-        self.threshold = [0.6, 0.9, 0.7] if threshold is None else threshold
+        self.threshold = [0.6, 0.7, 0.7] if threshold is None else threshold
         # 实现图片金字塔,以这个比例缩小图片
         self.scale_factor = scale_factor
 
