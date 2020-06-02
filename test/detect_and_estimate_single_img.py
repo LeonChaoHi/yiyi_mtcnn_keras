@@ -68,4 +68,4 @@ if __name__ == '__main__':
     #     print("ERROR:%s Input img name with .jpg \r\n" % (sys.argv[0]))
     # else:
     #     main(sys.argv[1]
-    main('20130530_03_Driv_108_f .jpg')
+    main('test01.jpg')

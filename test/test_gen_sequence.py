@@ -48,6 +48,8 @@ def main(image_file):
             continue
 
         labels = bboxes[:, 4]
+        width = bboxes[:, 2] - bboxes[:, 0]
+        bboxes = bboxes[width > 50]
         bboxes = bboxes[np.argsort(labels)[-1:], :]     # TODO: test only
 
         # crop head pose estimate images
@@ -63,10 +65,24 @@ def main(image_file):
 
         # estimate pose
         _, poses = estimator.estimate(cropped_ims)
+
         output.append(poses)
 
+        # draw b-boxes and head axises in image
+        output_img_full_path = "/Users/leon/Downloads/DrivFace/drivface_outdir/" + img_name
+        for i in range(1):
+            # print('bbox score--:',bbox[4])
+            bbox_ = bboxes[i]
+            pose_ = poses[i]
+            # cv2.rectangle(image, (int(bbox_[0]), int(bbox_[1])), (int(bbox_[2]), int(bbox_[3])), (0, 0, 255))
+            tdy = round((bbox_[1] + bbox_[3]) / 2)
+            tdx = round((bbox_[0] + bbox_[2]) / 2)
+            image = draw_axis(image, yaw=pose_[0], pitch=pose_[1], roll=pose_[2], tdx=tdx, tdy=tdy)
+
+        cv2.imwrite(output_img_full_path, image)
+
     time_span = time.time() - start
-    print('Time spend: ', time_span)
+    print('Time spent: ', time_span)
 
     # show and save result sequence
     output = np.array(output).squeeze(axis=1)
